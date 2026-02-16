@@ -2,20 +2,13 @@ package firstpass
 
 import (
 	"nyassembler/util"
-	"strings"
 )
 
 func FirstPass(input []string) ([]SymbolTable, error) {
 	symbolTable := []SymbolTable{}
 
 	for idx, line := range input {
-		noComments := strings.TrimSpace(util.CommentsRegex.ReplaceAllString(line, ""))
-
-		if noComments == "" {
-			continue
-		}
-
-		labelMatches := util.LabelRegex.FindString(noComments)
+		labelMatches := util.LabelRegex.FindString(line)
 
 		if labelMatches == "" {
 			continue

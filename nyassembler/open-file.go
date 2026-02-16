@@ -1,6 +1,7 @@
 package main
 
 import (
+	"nyassembler/util"
 	"os"
 	"strings"
 )
@@ -15,5 +16,18 @@ func OpenFile(filePath string) ([]string, error) {
 	contentString := string(contentBytes)
 	lineSplit := strings.Split(contentString, "\n")
 
-	return lineSplit, nil
+	// removing comments and blank likes here instead of doing it twice in every pass
+	var output []string
+
+	for _, line := range lineSplit {
+		noComments := util.CommentsRegex.ReplaceAllString(line, "")
+
+		if noComments == "" {
+			continue
+		}
+
+		output = append(output, noComments)
+	}
+
+	return output, nil
 }
