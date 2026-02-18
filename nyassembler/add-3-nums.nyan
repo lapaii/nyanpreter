@@ -1,0 +1,11 @@
+start: LDD first
+ADD second
+ADD third
+STO total
+OUT // output should be 100
+END
+
+first: DAT #20
+second: DAT #30
+third: DAT #40
+total: DAT #0

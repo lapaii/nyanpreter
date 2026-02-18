@@ -1,8 +1,0 @@
-SuperLongLabelThatShouldStill-Work_hi: LDM #20 // label:hi 
-ADD thirty
-ADD forty
-// whole line comment!!
-OUT
-
-thirty: DAT #30
-forty: DAT #40
