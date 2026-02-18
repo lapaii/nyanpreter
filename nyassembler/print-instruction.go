@@ -13,8 +13,8 @@ func reverseMap(m map[string]secondpass.Operand) map[secondpass.Operand]string {
 	return n
 }
 
-func PrintInstruction(inst secondpass.Instruction) {
+func PrintInstruction(inst secondpass.Instruction, idx int) {
 	reversedMap := reverseMap(secondpass.InstructionSet)
 
-	fmt.Printf("%s %s\n", reversedMap[inst.Operand], inst.Operator)
+	fmt.Printf("%d: %s %s\n", idx, reversedMap[inst.Operand], inst.Operator)
 }

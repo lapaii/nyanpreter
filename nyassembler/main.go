@@ -33,7 +33,7 @@ func main() {
 
 	fmt.Println(outputProgram)
 
-	for _, inst := range outputProgram {
-		PrintInstruction(inst)
+	for idx, inst := range outputProgram {
+		PrintInstruction(inst, idx)
 	}
 }
