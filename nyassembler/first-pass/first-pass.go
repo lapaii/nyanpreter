@@ -4,8 +4,8 @@ import (
 	"nyassembler/util"
 )
 
-func FirstPass(input []string) ([]SymbolTable, error) {
-	symbolTable := []SymbolTable{}
+func FirstPass(input []string) (SymbolTable, error) {
+	symbolTable := SymbolTable{}
 
 	for idx, line := range input {
 		labelMatches := util.LabelRegex.FindString(line)
@@ -16,10 +16,9 @@ func FirstPass(input []string) ([]SymbolTable, error) {
 
 		labelMatches = labelMatches[:len(labelMatches)-1] // FindString still returns the trailing ":", this removes it
 
-		symbolTable = append(symbolTable, SymbolTable{
-			LabelName: labelMatches,
-			LineNum:   idx,
-		})
+		// adding 1 so that i can tell when a label
+		// is defined on the first line vs not at all
+		symbolTable[labelMatches] = idx + 1
 	}
 
 	return symbolTable, nil

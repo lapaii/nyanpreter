@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	firstpass "nyassembler/first-pass"
 	secondpass "nyassembler/second-pass"
 )
@@ -24,5 +25,15 @@ func main() {
 		panic(err)
 	}
 
-	secondpass.SecondPass(contents, symbolTable)
+	outputProgram, err := secondpass.SecondPass(contents, symbolTable)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(outputProgram)
+
+	for _, inst := range outputProgram {
+		PrintInstruction(inst)
+	}
 }

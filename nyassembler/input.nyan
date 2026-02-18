@@ -1,5 +1,5 @@
 SuperLongLabelThatShouldStill-Work_hi: LDM #20 // label:hi 
-ADD number
+ADD thirty
 ADD forty
 // whole line comment!!
 OUT
