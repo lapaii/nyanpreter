@@ -13,6 +13,12 @@ func main() {
 	flag.StringVar(&inputPath, "input", "input.nyan", "the file to assemble")
 	flag.StringVar(&outputPath, "output", "output.nyobj", "the output path of the object file")
 
+	StartAssembly(inputPath, outputPath)
+}
+
+// Function around the logic so that i can make a
+// testing suite that assembles files and tests against their output
+func StartAssembly(inputPath string, outputPath string) {
 	contents, err := OpenFile(inputPath)
 
 	if err != nil {
@@ -30,8 +36,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println(outputProgram)
 
 	for idx, inst := range outputProgram {
 		PrintInstruction(inst, idx)
