@@ -1,6 +1,6 @@
 package secondpass
 
-type Operand int
+type Operand uint8
 type Operator string
 
 type Instruction struct {

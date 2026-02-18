@@ -5,6 +5,7 @@ import (
 	"fmt"
 	firstpass "nyassembler/first-pass"
 	secondpass "nyassembler/second-pass"
+	"nyassembler/serialiser"
 )
 
 func main() {
@@ -39,5 +40,13 @@ func StartAssembly(inputPath string, outputPath string) {
 
 	for idx, inst := range outputProgram {
 		PrintInstruction(inst, idx)
+	}
+
+	bytes := serialiser.Serialise(outputProgram)
+
+	err = WriteFile(outputPath, bytes)
+
+	if err != nil {
+		panic(err)
 	}
 }
