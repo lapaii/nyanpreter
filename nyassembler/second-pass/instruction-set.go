@@ -32,8 +32,8 @@ const (
 	JMP
 	CMP
 	CMI
-	JPE
-	JPN
+	JE
+	JNE
 	IN
 	OUT
 	END
@@ -62,8 +62,8 @@ var InstructionSet = map[string]Operand{
 	"JMP": JMP,
 	"CMP": CMP,
 	"CMI": CMI,
-	"JPE": JPE,
-	"JPN": JPN,
+	"JE":  JE,
+	"JNE": JNE,
 	"IN":  IN,
 	"OUT": OUT,
 	"END": END,
@@ -84,6 +84,6 @@ var RegisterOperator = []Operand{MOV, INC, DEC}
 var NumberOperator = []Operand{LDM, LDR, LSL, LSR}
 
 // list of instructions that require addresses
-var AddressOperator = []Operand{LDD, LDI, LDX, STO, JMP, CMI, JPE, JPN}
+var AddressOperator = []Operand{LDD, LDI, LDX, STO, JMP, CMI, JE, JNE}
 
 // all other instructions can be either defined number or address

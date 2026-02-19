@@ -40,8 +40,8 @@ const (
 	JMP
 	CMP
 	CMI
-	JPE
-	JPN
+	JE
+	JNE
 	IN
 	OUT
 	END

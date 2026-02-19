@@ -9,7 +9,7 @@ MOV IDX
 STO current_index
 
 CMP str_len
-JPN loop
+JNE loop
 
 LDM #10
 OUT

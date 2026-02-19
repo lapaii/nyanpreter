@@ -4,7 +4,7 @@ ADD #1
 STO current_index // store current index to increment it again later
 CMP end_index
 // compare the current_index with end_index to see if we should end the program or continue outputting the alphabet
-JPN loop
+JNE loop
 LDM #10 // add new line at the end of program
 OUT
 END

@@ -26,8 +26,8 @@ var FunctionMap = map[util.Operand]func(*registers.Registers, util.Operator, *[]
 	util.JMP: control.JMP,
 	util.CMP: control.CMP,
 	util.CMI: control.CMI,
-	util.JPE: control.JPE,
-	util.JPN: control.JPN,
+	util.JE:  control.JE,
+	util.JNE: control.JNE,
 	util.IN:  control.IN,
 	util.OUT: control.OUT,
 

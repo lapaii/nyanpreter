@@ -1,7 +1,7 @@
 LDD first_val
 CMI compare
-JPE true
-JPN false
+JE true
+JNE false
 true: LDM #65
 OUT
 END
