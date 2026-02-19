@@ -43,6 +43,8 @@ const (
 	CMI
 	JE
 	JNE
+	JGE
+	JLE
 	IN
 	OUT
 	END
@@ -74,6 +76,8 @@ var InstructionSet = map[string]Operand{
 	"CMI": CMI,
 	"JE":  JE,
 	"JNE": JNE,
+	"JGE": JGE,
+	"JLE": JLE,
 	"IN":  IN,
 	"OUT": OUT,
 	"END": END,

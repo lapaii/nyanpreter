@@ -13,8 +13,8 @@ you are viewing this on the extra branch!
 - reworking jump-on-condition instructions:
   - ✅ renaming JPE -> JE
   - ✅ renaming JPN -> JNE
-  - adding JGE (jump greater equal)
-  - adding JLE (jump less equal)
+  - ✅ adding JGE (jump greater equal)
+  - ✅ adding JLE (jump less equal)
 - ✅ add CMX instruction (compare operator with IDX register)
 - allow direct reading and manipulation of the PC register
 - add MUL, DIV (integer division), MOD instructions
