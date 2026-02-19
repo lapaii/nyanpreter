@@ -18,8 +18,6 @@ func Runtime(decodedProgram []util.Instruction) error {
 			continue
 		}
 
-		// fmt.Println(currentInstruction)
-
 		err := FunctionMap[currentInstruction.Operand](&registers, currentInstruction.Operator, &decodedProgram)
 
 		if err != nil {
