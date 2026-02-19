@@ -3,10 +3,10 @@ package control
 import (
 	"fmt"
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 )
 
-func OUT(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func OUT(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	fmt.Printf("%c", r.GetAccumulator())
 
 	return nil

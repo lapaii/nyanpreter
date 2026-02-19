@@ -2,11 +2,11 @@ package math
 
 import (
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 )
 
 // operator is IDX or ACC
-func DEC(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func DEC(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	parsedOperator := string(operator)
 
 	if parsedOperator == "IDX" {

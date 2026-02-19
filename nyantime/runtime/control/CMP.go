@@ -3,10 +3,11 @@ package control
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
 // CMP operator is an address
-func CMP(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func CMP(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	parsedOperator, err := util.ParseOperator(operator) // just line number
 
 	valueToCompare, err := util.ParseOperator((*program)[parsedOperator].Operator)

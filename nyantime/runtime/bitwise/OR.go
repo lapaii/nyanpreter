@@ -3,9 +3,10 @@ package bitwise
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
-func OR(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func OR(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	firstChar := string(operator[0])
 
 	parsedOperator, err := util.ParseOperator(operator)

@@ -1,14 +1,17 @@
 package secondpass
 
-import "fmt"
+import (
+	"fmt"
+	"shared"
+)
 
-func ParseOperand(input string, lineNum int) (Operand, error) {
-	var operand Operand
+func ParseOperand(input string, lineNum int) (shared.Operand, error) {
+	var operand shared.Operand
 	var returnError error = nil
 
-	operand = InstructionSet[input]
+	operand = shared.InstructionSet[input]
 
-	if operand == INVALID {
+	if operand == shared.INVALID {
 		returnError = fmt.Errorf("Invalid instruction at Line %d: %s", lineNum+1, input)
 	}
 

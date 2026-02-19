@@ -3,17 +3,17 @@ package runtime
 import (
 	"fmt"
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 )
 
-func Runtime(decodedProgram []util.Instruction) error {
+func Runtime(decodedProgram []shared.Instruction) error {
 	registers := registers.NewRegisters()
 	shouldContinue := true
 
 	for shouldContinue {
 		currentInstruction := decodedProgram[registers.GetPC()]
 
-		if currentInstruction.Operand == util.END {
+		if currentInstruction.Operand == shared.END {
 			shouldContinue = false
 			continue
 		}

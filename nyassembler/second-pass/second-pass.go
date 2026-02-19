@@ -4,14 +4,15 @@ import (
 	"fmt"
 	firstpass "nyassembler/first-pass"
 	"regexp"
+	"shared"
 	"slices"
 	"strconv"
 	"strings"
 )
 
 // function is rather "messy", should get cleaned up some time
-func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruction, error) {
-	var outputProgram []Instruction
+func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]shared.Instruction, error) {
+	var outputProgram []shared.Instruction
 
 	numberOperator := regexp.MustCompile(`(#[0-9]+)|(B[0-1]+)|(\^[0-9A-F]+)`)
 	rawNumberOperator := regexp.MustCompile(`([0-9]+)`)
@@ -45,20 +46,20 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 
 		// something has gone wrong, throw error!!
 		if operandIndex == -1 {
-			return []Instruction{}, fmt.Errorf("something went wrong on line %d!! %s", idx, line)
+			return []shared.Instruction{}, fmt.Errorf("something went wrong on line %d!! %s", idx, line)
 		}
 
 		operand, err := ParseOperand(lineParts[operandIndex], idx)
 
 		if err != nil {
-			return []Instruction{}, err
+			return []shared.Instruction{}, err
 		}
 
 		// operand DOESNT get an operator
-		if slices.Contains(NoOperator, operand) {
+		if slices.Contains(shared.NoOperator, operand) {
 			// no operator in the line
 			if operandIndex+1 > len(lineParts)-1 {
-				outputProgram = append(outputProgram, Instruction{
+				outputProgram = append(outputProgram, shared.Instruction{
 					Operand:  operand,
 					Operator: "",
 				})
@@ -66,26 +67,26 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 				continue
 			}
 
-			return []Instruction{}, fmt.Errorf("operator with operand that doesn't support an operator! on line %d %s", idx, line)
+			return []shared.Instruction{}, fmt.Errorf("operator with operand that doesn't support an operator! on line %d %s", idx, line)
 		}
 
 		// dealt with operands without operators, now just throw an error if there isn't one
 		if operandIndex+1 > len(lineParts)-1 {
-			return []Instruction{}, fmt.Errorf("no operator found on line %d! %s", idx, line)
+			return []shared.Instruction{}, fmt.Errorf("no operator found on line %d! %s", idx, line)
 		}
 
 		operator := lineParts[operandIndex+1]
 
 		// operand requires a register for the operator (ACC or IDX)
-		if slices.Contains(RegisterOperator, operand) {
+		if slices.Contains(shared.RegisterOperator, operand) {
 			// is it a register?
 			if operator != "ACC" && operator != "IDX" {
-				return []Instruction{}, fmt.Errorf("operator on line %d isn't a register! %s", idx, line)
+				return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't a register! %s", idx, line)
 			}
 
-			outputProgram = append(outputProgram, Instruction{
+			outputProgram = append(outputProgram, shared.Instruction{
 				Operand:  operand,
-				Operator: Operator(operator),
+				Operator: shared.Operator(operator),
 			})
 
 			continue
@@ -95,33 +96,33 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 		// that use numbers / addresses (or labels to represent either of those)
 
 		// instruction can only take defined numbers
-		if slices.Contains(NumberOperator, operand) {
+		if slices.Contains(shared.NumberOperator, operand) {
 			// this operator is a number
 			if numberOperator.MatchString(operator) {
-				outputProgram = append(outputProgram, Instruction{
+				outputProgram = append(outputProgram, shared.Instruction{
 					Operand:  operand,
-					Operator: Operator(operator),
+					Operator: shared.Operator(operator),
 				})
 
 				continue
 			}
 
-			return []Instruction{}, fmt.Errorf("operator on line %d isn't a defined number! %s", idx, line)
+			return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't a defined number! %s", idx, line)
 		}
 
 		// instruction can only take addresses
-		if slices.Contains(AddressOperator, operand) {
+		if slices.Contains(shared.AddressOperator, operand) {
 			// operator is a defined number, not allowed
 			if numberOperator.MatchString(operator) {
-				return []Instruction{}, fmt.Errorf("operator on line %d isn't an address! %s", idx, line)
+				return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't an address! %s", idx, line)
 			}
 
 			// operator is a "raw" address, i.e. LDD 5 <- load operator at address 5
 			if rawNumberOperator.MatchString(operator) {
 				// just add to output
-				outputProgram = append(outputProgram, Instruction{
+				outputProgram = append(outputProgram, shared.Instruction{
 					Operand:  operand,
-					Operator: Operator(operator),
+					Operator: shared.Operator(operator),
 				})
 
 				continue
@@ -132,13 +133,13 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 
 			// operator isnt in symbol table
 			if symbolTableLine == 0 {
-				return []Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
+				return []shared.Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
 			}
 
 			// label is properly defined and used
-			outputProgram = append(outputProgram, Instruction{
+			outputProgram = append(outputProgram, shared.Instruction{
 				Operand:  operand,
-				Operator: Operator(strconv.Itoa(symbolTableLine - 1)),
+				Operator: shared.Operator(strconv.Itoa(symbolTableLine - 1)),
 			})
 
 			continue
@@ -146,9 +147,9 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 
 		// instruction can take either user defined number or an address
 		if numberOperator.MatchString(operator) {
-			outputProgram = append(outputProgram, Instruction{
+			outputProgram = append(outputProgram, shared.Instruction{
 				Operand:  operand,
-				Operator: Operator(operator),
+				Operator: shared.Operator(operator),
 			})
 
 			continue
@@ -158,9 +159,9 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 		// operator is a "raw" address
 		if rawNumberOperator.MatchString(operator) {
 			// just add to output
-			outputProgram = append(outputProgram, Instruction{
+			outputProgram = append(outputProgram, shared.Instruction{
 				Operand:  operand,
-				Operator: Operator(operator),
+				Operator: shared.Operator(operator),
 			})
 
 			continue
@@ -171,13 +172,13 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]Instruc
 
 		// operator isnt in symbol table
 		if symbolTableLine == 0 {
-			return []Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
+			return []shared.Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
 		}
 
 		// label is properly defined and used
-		outputProgram = append(outputProgram, Instruction{
+		outputProgram = append(outputProgram, shared.Instruction{
 			Operand:  operand,
-			Operator: Operator(strconv.Itoa(symbolTableLine - 1)),
+			Operator: shared.Operator(strconv.Itoa(symbolTableLine - 1)),
 		})
 
 		continue

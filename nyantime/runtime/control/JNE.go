@@ -2,11 +2,11 @@ package control
 
 import (
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 	"strconv"
 )
 
-func JNE(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func JNE(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	parsedOperator, err := strconv.Atoi(string(operator))
 
 	if err != nil {

@@ -3,10 +3,11 @@ package math
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
 // add can be a number or address
-func ADD(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func ADD(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	firstChar := string(operator[0])
 
 	parsedOperator, err := util.ParseOperator(operator)

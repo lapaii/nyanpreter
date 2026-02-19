@@ -2,11 +2,11 @@ package memory
 
 import (
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 )
 
 // register operator!!
-func MOV(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func MOV(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	parsedOperator := string(operator)
 
 	if parsedOperator == "IDX" {

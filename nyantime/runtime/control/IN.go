@@ -2,13 +2,13 @@ package control
 
 import (
 	"nyantime/registers"
-	"nyantime/util"
 	"os"
+	"shared"
 
 	"golang.org/x/term"
 )
 
-func IN(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func IN(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	// switch stdin into 'raw' mode, this hides input
 	// https://stackoverflow.com/a/70627571
 	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))

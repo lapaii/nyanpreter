@@ -1,10 +1,10 @@
 package serialiser
 
 import (
-	secondpass "nyassembler/second-pass"
+	"shared"
 )
 
-func Serialise(input []secondpass.Instruction) []byte {
+func Serialise(input []shared.Instruction) []byte {
 	// this is whats going to output a buffer with the binary format
 
 	// 1 byte for operand

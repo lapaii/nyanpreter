@@ -3,9 +3,10 @@ package math
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
-func SUB(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func SUB(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	parsedOperator, err := util.ParseOperator(operator)
 
 	if err != nil {

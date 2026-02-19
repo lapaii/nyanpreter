@@ -3,9 +3,10 @@ package control
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
-func CMI(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func CMI(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	// operator is an address in this instruction
 
 	// parsedOperator is the address to get contents of

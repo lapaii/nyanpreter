@@ -3,9 +3,10 @@ package memory
 import (
 	"nyantime/registers"
 	"nyantime/util"
+	"shared"
 )
 
-func LDX(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func LDX(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	// this is an address
 	parsedOperator, err := util.ParseOperator(operator)
 

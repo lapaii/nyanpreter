@@ -1,10 +1,11 @@
 package util
 
 import (
+	"shared"
 	"strconv"
 )
 
-func ParseOperator(operator Operator) (int, error) {
+func ParseOperator(operator shared.Operator) (int, error) {
 	numberBase := -1
 
 	switch operator[0] {

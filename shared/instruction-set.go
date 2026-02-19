@@ -1,4 +1,4 @@
-package secondpass
+package shared
 
 type Operand uint8
 type Operator string
@@ -6,6 +6,14 @@ type Operator string
 type Instruction struct {
 	Operand  Operand
 	Operator Operator
+}
+
+func ModifyInstruction(instructions *[]Instruction, index int, newInstruction Instruction) {
+	(*instructions)[index] = newInstruction
+}
+
+func (inst *Instruction) ModifyOperator(newOperator string) {
+	inst.Operator = Operator(newOperator)
 }
 
 const (

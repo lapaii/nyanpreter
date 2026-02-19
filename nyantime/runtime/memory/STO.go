@@ -3,11 +3,11 @@ package memory
 import (
 	"fmt"
 	"nyantime/registers"
-	"nyantime/util"
+	"shared"
 	"strconv"
 )
 
-func STO(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
+func STO(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
 	// sto just sets the value of the operator on the instruction
 	// that this instructions operator points to the value of the acc
 
@@ -17,9 +17,9 @@ func STO(r *registers.Registers, operator util.Operator, program *[]util.Instruc
 		return err
 	}
 
-	util.ModifyInstruction(program, parsedOperator, util.Instruction{
+	shared.ModifyInstruction(program, parsedOperator, shared.Instruction{
 		Operand:  (*program)[parsedOperator].Operand,
-		Operator: util.Operator(fmt.Sprintf("#%d", r.GetAccumulator())),
+		Operator: shared.Operator(fmt.Sprintf("#%d", r.GetAccumulator())),
 	})
 
 	return nil
