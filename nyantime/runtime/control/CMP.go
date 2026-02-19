@@ -6,9 +6,24 @@ import (
 	"shared"
 )
 
-// CMP operator is an address
+// CMP operator is an address or number
 func CMP(r *registers.Registers, operator shared.Operator, program *[]shared.Instruction) error {
-	parsedOperator, err := util.ParseOperator(operator) // just line number
+	firstChar := string(operator[0])
+
+	parsedOperator, err := util.ParseOperator(operator)
+
+	if err != nil {
+		return err
+	}
+
+	switch firstChar {
+	case "#", "B", "&":
+		// is a user-defined number
+		r.SetEqualFlag(r.GetAccumulator() == parsedOperator)
+		r.SetGreaterThanFlag(r.GetAccumulator() > parsedOperator)
+
+		return nil
+	}
 
 	valueToCompare, err := util.ParseOperator((*program)[parsedOperator].Operator)
 

@@ -1,0 +1,10 @@
+start: LDM #10
+CMP #20
+JLE less // compare if acc (10) less than or equal to 20
+LDM #122 // is not less or equal than, print z
+OUT
+END
+
+less: LDM #65 // is less than, print A
+OUT
+END

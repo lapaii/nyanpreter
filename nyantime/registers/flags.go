@@ -9,7 +9,7 @@ func (r *Registers) SetEqualFlag(value bool) {
 }
 
 func (r *Registers) GetEqualFlag() bool {
-	return r.flags&Equal == 1
+	return r.flags&Equal == Equal
 }
 
 func (r *Registers) SetGreaterThanFlag(value bool) {
@@ -21,5 +21,5 @@ func (r *Registers) SetGreaterThanFlag(value bool) {
 }
 
 func (r *Registers) GetGreaterThanFlag() bool {
-	return r.flags&GreaterThan == 1
+	return r.flags&GreaterThan == GreaterThan
 }
