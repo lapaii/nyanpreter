@@ -39,10 +39,6 @@ func StartAssembly(inputPath string, outputPath string) {
 		fmt.Println(err)
 	}
 
-	for idx, inst := range outputProgram {
-		PrintInstruction(inst, idx)
-	}
-
 	bytes := serialiser.Serialise(outputProgram)
 
 	err = WriteFile(outputPath, bytes)
