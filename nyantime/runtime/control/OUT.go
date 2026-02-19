@@ -7,7 +7,7 @@ import (
 )
 
 func OUT(r *registers.Registers, operator util.Operator, program *[]util.Instruction) error {
-	fmt.Println(r.Accumulator)
+	fmt.Printf("%c", r.Accumulator)
 
 	return nil
 }
