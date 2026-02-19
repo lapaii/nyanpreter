@@ -25,6 +25,7 @@ var FunctionMap = map[shared.Operand]func(*registers.Registers, shared.Operator,
 
 	shared.JMP: control.JMP,
 	shared.CMP: control.CMP,
+	shared.CMX: control.CMX,
 	shared.CMI: control.CMI,
 	shared.JE:  control.JE,
 	shared.JNE: control.JNE,

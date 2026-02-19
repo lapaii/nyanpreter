@@ -3,12 +3,7 @@ OUT
 INC IDX // increment IDX
 
 // if idx != str_len then jmp back to loop
-LDD current_index
-ADD #1
-MOV IDX
-STO current_index
-
-CMP str_len
+CMX str_len
 JNE loop
 
 LDM #10

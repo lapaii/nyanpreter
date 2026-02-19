@@ -39,6 +39,7 @@ const (
 	// control flow
 	JMP
 	CMP
+	CMX
 	CMI
 	JE
 	JNE
@@ -69,6 +70,7 @@ var InstructionSet = map[string]Operand{
 	"DEC": DEC,
 	"JMP": JMP,
 	"CMP": CMP,
+	"CMX": CMX,
 	"CMI": CMI,
 	"JE":  JE,
 	"JNE": JNE,
