@@ -9,7 +9,7 @@ import (
 )
 
 var FunctionMap = map[util.Operand]func(*registers.Registers, util.Operator, *[]util.Instruction) error{
-	// missing ldm
+	util.LDM: memory.LDM,
 	util.LDD: memory.LDD,
 	util.STO: memory.STO,
 
