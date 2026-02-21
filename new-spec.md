@@ -6,6 +6,12 @@ it is mainly based of the existing language from the cambridge international 961
 
 most instructions will have two operands, unlike just the one in the previous language
 
+registers r0-r7, idx and pc (program counter) are available for use.
+
+while it is not advised to write into the pc register (instead use jmp instructions) you are still free to.
+
+register encoding in binary: r0-7 get 0-7, idx gets 8 and pc 9
+
 ## syntax
 
 the syntax for nyasm is a mix of my favourite parts of gas syntax and intel syntax
@@ -58,10 +64,10 @@ i dont _see_ this expanding in the future, but you never know!
 | ------ | ------------------- | --------------------------------------------------------------------------- |
 | mov    | dest, src           | copy the data from src to dest                                              |
 | add    | dest, addend        | addend + dest and stores in dest                                            |
-| sub    | minuend, subtrahend | subtrahend - minuend and store result in minuend                            |
-| mul    | dest, multiplier    | multiplier \* dest and store result in dest                                 |
-| div    | divisor, dividend   | integer divide dividend ÷ divisor and store result in divisor               |
-| mod    | divisor, dividend   | dividend mod divisor and store result in divisor                            |
+| sub    | dest, src           | dest = dest - src                                                           |
+| mul    | dest, src           | dest = dest \* src                                                          |
+| div    | dest, src           | integer divide (dest = src / dest)                                          |
+| mod    | dest, src           | dest = src mod dest                                                         |
 | and    | dest, mask          | bitwise AND both operands and store in dest                                 |
 | not    | arg                 | bitwise NOT arg                                                             |
 | xor    | dest, flip          | bitwise XOR both operands and stoere in dest                                |
@@ -81,7 +87,7 @@ i dont _see_ this expanding in the future, but you never know!
 | in     | dest                | save ascii value of a character entered into stdin to dest                  |
 | out    | src                 | output ascii value from src to stdout                                       |
 | outd   | src                 | output value from src to stdout as a decimal number                         |
+| end    |                     | end program                                                                 |
 | call   | src                 | jump to address, while pushing the current PC to the return stack           |
 | ret    |                     | pop from return stack and set PC to that location                           |
 | dn     | number              | declare number                                                              |
-| ds     | string              | declare string                                                              |

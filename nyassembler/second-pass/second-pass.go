@@ -3,186 +3,74 @@ package secondpass
 import (
 	"fmt"
 	firstpass "nyassembler/first-pass"
-	"regexp"
+	"nyassembler/second-pass/operand"
+	"nyassembler/util"
 	"shared"
-	"slices"
-	"strconv"
 	"strings"
 )
 
-// function is rather "messy", should get cleaned up some time
 func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]shared.Instruction, error) {
-	var outputProgram []shared.Instruction
-
-	numberOperator := regexp.MustCompile(`(#[0-9]+)|(B[0-1]+)|(\^[0-9A-F]+)`)
-	rawNumberOperator := regexp.MustCompile(`([0-9]+)`)
+	var outputProgram = []shared.Instruction{}
 
 	for idx, line := range contents {
-		// stuff this step does
-		// check if opcode is valid, if not: throw error and stop
-		// check if operator is a label, if so: replace with value from symbol table
-
-		// going to keep storing operator as a string, this is so that i can
-		// encode numbers as #n/Bn/&n and addresses as just `n`
-
-		// if the operator isn't compatible with the opcode, throw an error and stop
-
-		// output
+		line := strings.ReplaceAll(line, ",", "")
 
 		lineParts := strings.Fields(line)
 
-		// operator will always be 1 more than opcode
-		// setting to 0 so that i can tell when something goes wrong
-		var opcodeIndex = -1
-
-		switch len(lineParts) {
-		// label definition lines
-		case 3:
-			opcodeIndex = 1
-		// opcode operator or just opcode lines
-		case 2, 1:
-			opcodeIndex = 0
+		// if line is a label definition, remove label definition as we dont need it here
+		if util.LabelRegex.MatchString(lineParts[0]) {
+			lineParts = lineParts[1:]
 		}
 
-		// something has gone wrong, throw error!!
-		if opcodeIndex == -1 {
-			return []shared.Instruction{}, fmt.Errorf("something went wrong on line %d!! %s", idx, line)
+		OpcodeInfo := shared.InstructionSet[lineParts[0]]
+
+		// invalid opcode!
+		if OpcodeInfo.Opcode == 0 {
+			return []shared.Instruction{}, fmt.Errorf("[line %d] invalid opcode found! %s", idx+1, lineParts[0])
 		}
 
-		opcode, err := ParseOpcode(lineParts[opcodeIndex], idx)
-
-		if err != nil {
-			return []shared.Instruction{}, err
+		// check if correct amount of operands were received
+		// if not, return error
+		if len(lineParts) != int(OpcodeInfo.NumOperand)+1 {
+			return []shared.Instruction{}, fmt.Errorf("[line %d] %d operand(s) expected, received %d", idx+1, OpcodeInfo.NumOperand, len(lineParts)-1)
 		}
 
-		// opcode DOESNT get an operator
-		if slices.Contains(shared.NoOperator, opcode) {
-			// no operator in the line
-			if opcodeIndex+1 > len(lineParts)-1 {
-				outputProgram = append(outputProgram, shared.Instruction{
-					Opcode:   opcode,
-					Operator: "",
-				})
+		// init operand stuff
+		var src shared.Operand
+		var target shared.Operand
+		var srcType shared.OperandType
+		var targetType shared.OperandType
 
-				continue
+		// parse first operand
+		var err error
+		if OpcodeInfo.NumOperand == 1 {
+			src, srcType, err = operand.ParseOperand(idx, lineParts[1], symbolTable)
+
+			if err != nil {
+				return []shared.Instruction{}, err
 			}
-
-			return []shared.Instruction{}, fmt.Errorf("operator with opcode that doesn't support an operator! on line %d %s", idx, line)
 		}
 
-		// dealt with opcodes without operators, now just throw an error if there isn't one
-		if opcodeIndex+1 > len(lineParts)-1 {
-			return []shared.Instruction{}, fmt.Errorf("no operator found on line %d! %s", idx, line)
-		}
+		// parse second operand
+		if OpcodeInfo.NumOperand == 2 {
+			target, targetType, err = operand.ParseOperand(idx, lineParts[2], symbolTable)
 
-		operator := lineParts[opcodeIndex+1]
-
-		// opcode requires a register for the operator (ACC, IDX or PC)
-		if slices.Contains(shared.RegisterOperator, opcode) {
-			// is it a register?
-			if operator != "ACC" && operator != "IDX" && operator != "PC" {
-				return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't a register! %s", idx, line)
+			if err != nil {
+				return []shared.Instruction{}, err
 			}
-
-			outputProgram = append(outputProgram, shared.Instruction{
-				Opcode:   opcode,
-				Operator: shared.Operator(operator),
-			})
-
-			continue
 		}
 
-		// now we are dealing with only instructions
-		// that use numbers / addresses (or labels to represent either of those)
-
-		// instruction can only take defined numbers
-		if slices.Contains(shared.NumberOperator, opcode) {
-			// this operator is a number
-			if numberOperator.MatchString(operator) {
-				outputProgram = append(outputProgram, shared.Instruction{
-					Opcode:   opcode,
-					Operator: shared.Operator(operator),
-				})
-
-				continue
-			}
-
-			return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't a defined number! %s", idx, line)
-		}
-
-		// instruction can only take addresses
-		if slices.Contains(shared.AddressOperator, opcode) {
-			// operator is a defined number, not allowed
-			if numberOperator.MatchString(operator) {
-				return []shared.Instruction{}, fmt.Errorf("operator on line %d isn't an address! %s", idx, line)
-			}
-
-			// operator is a "raw" address, i.e. LDD 5 <- load operator at address 5
-			if rawNumberOperator.MatchString(operator) {
-				// just add to output
-				outputProgram = append(outputProgram, shared.Instruction{
-					Opcode:   opcode,
-					Operator: shared.Operator(operator),
-				})
-
-				continue
-			}
-
-			// operator must be a label now
-			symbolTableLine := symbolTable[operator]
-
-			// operator isnt in symbol table
-			if symbolTableLine == 0 {
-				return []shared.Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
-			}
-
-			// label is properly defined and used
-			outputProgram = append(outputProgram, shared.Instruction{
-				Opcode:   opcode,
-				Operator: shared.Operator(strconv.Itoa(symbolTableLine - 1)),
-			})
-
-			continue
-		}
-
-		// instruction can take either user defined number or an address
-		if numberOperator.MatchString(operator) {
-			outputProgram = append(outputProgram, shared.Instruction{
-				Opcode:   opcode,
-				Operator: shared.Operator(operator),
-			})
-
-			continue
-		}
-
-		// not a defined number, at this point it must be an address
-		// operator is a "raw" address
-		if rawNumberOperator.MatchString(operator) {
-			// just add to output
-			outputProgram = append(outputProgram, shared.Instruction{
-				Opcode:   opcode,
-				Operator: shared.Operator(operator),
-			})
-
-			continue
-		}
-
-		// must be a label now
-		symbolTableLine := symbolTable[operator]
-
-		// operator isnt in symbol table
-		if symbolTableLine == 0 {
-			return []shared.Instruction{}, fmt.Errorf("%s is used as a symbol but isn't defined at all! line %d", operator, idx)
-		}
-
-		// label is properly defined and used
+		// add this instruction
 		outputProgram = append(outputProgram, shared.Instruction{
-			Opcode:   opcode,
-			Operator: shared.Operator(strconv.Itoa(symbolTableLine - 1)),
+			SourceType: srcType,
+			TargetType: targetType,
+			Opcode:     OpcodeInfo.Opcode,
+			Source:     src,
+			Target:     target,
 		})
-
-		continue
 	}
+
+	fmt.Println(outputProgram)
 
 	return outputProgram, nil
 }

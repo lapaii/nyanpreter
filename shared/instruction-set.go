@@ -1,11 +1,23 @@
 package shared
 
 type Opcode uint8
-type Operator string
+type Operand int32
+
+type OperandType uint8
+
+const (
+	Register         OperandType = iota // 00
+	RegisterPointer                     // 01
+	Immediate                           // 10
+	ImmediatePointer                    // 11
+)
 
 type Instruction struct {
-	Opcode   Opcode
-	Operator Operator
+	SourceType OperandType
+	TargetType OperandType
+	Opcode     Opcode
+	Source     Operand
+	Target     Operand
 }
 
 func ModifyInstruction(instructions *[]Instruction, index int, newInstruction Instruction) {
@@ -13,93 +25,209 @@ func ModifyInstruction(instructions *[]Instruction, index int, newInstruction In
 }
 
 func (inst *Instruction) ModifyOperator(newOperator string) {
-	inst.Operator = Operator(newOperator)
+	// inst.Source = Operator(newOperator)
 }
 
 const (
 	INVALID Opcode = iota
 
-	// memory instructions
-	LDM
-	LDD
-	LDI
-	LDX
-	LDR
-	MOV
-	STO
+	mov
 
-	DAT
+	add
+	sub
+	mul
+	div
+	mod
 
-	// maths
-	ADD
-	SUB
-	INC
-	DEC
+	and
+	not
+	xor
+	or
+	shr
+	shl
 
-	// control flow
-	JMP
-	CMP
-	CMX
-	CMI
-	JE
-	JNE
-	JGE
-	JLE
-	IN
-	OUT
-	OUTD
-	END
+	jmp
+	cmp
+	je
+	jne
+	jz
+	jnz
+	jge
+	jg
+	jle
+	jl
 
-	// bitwise operations
-	AND
-	XOR
-	OR
-	LSL
-	LSR
+	in
+	out
+	outd
+	end
+	call
+	ret
+
+	dn
 )
 
-var InstructionSet = map[string]Opcode{
-	"LDM":  LDM,
-	"LDD":  LDD,
-	"LDI":  LDI,
-	"LDX":  LDX,
-	"LDR":  LDR,
-	"MOV":  MOV,
-	"STO":  STO,
-	"DAT":  DAT,
-	"ADD":  ADD,
-	"SUB":  SUB,
-	"INC":  INC,
-	"DEC":  DEC,
-	"JMP":  JMP,
-	"CMP":  CMP,
-	"CMX":  CMX,
-	"CMI":  CMI,
-	"JE":   JE,
-	"JNE":  JNE,
-	"JGE":  JGE,
-	"JLE":  JLE,
-	"IN":   IN,
-	"OUT":  OUT,
-	"OUTD": OUTD,
-	"END":  END,
-	"AND":  AND,
-	"XOR":  XOR,
-	"OR":   OR,
-	"LSL":  LSL,
-	"LSR":  LSR,
+type OpcodeInfo struct {
+	Opcode     Opcode
+	NumOperand uint8
 }
 
-// list of instructions that dont use an operator
-var NoOperator = []Opcode{IN, OUT, OUTD, END}
+var InstructionSet = map[string]OpcodeInfo{
+	"mov": {
+		Opcode:     mov,
+		NumOperand: 2,
+	},
+	"add": {
+		Opcode:     add,
+		NumOperand: 2,
+	},
+	"sub": {
+		Opcode:     sub,
+		NumOperand: 2,
+	},
+	"mul": {
+		Opcode:     mul,
+		NumOperand: 2,
+	},
+	"div": {
+		Opcode:     div,
+		NumOperand: 2,
+	},
+	"mod": {
+		Opcode:     mod,
+		NumOperand: 2,
+	},
+	"and": {
+		Opcode:     and,
+		NumOperand: 2,
+	},
+	"not": {
+		Opcode:     not,
+		NumOperand: 1,
+	},
+	"xor": {
+		Opcode:     xor,
+		NumOperand: 2,
+	},
+	"or": {
+		Opcode:     or,
+		NumOperand: 2,
+	},
+	"shr": {
+		Opcode:     shr,
+		NumOperand: 2,
+	},
+	"shl": {
+		Opcode:     shl,
+		NumOperand: 2,
+	},
+	"jmp": {
+		Opcode:     jmp,
+		NumOperand: 1,
+	},
+	"cmp": {
+		Opcode:     cmp,
+		NumOperand: 2,
+	},
+	"je": {
+		Opcode:     je,
+		NumOperand: 1,
+	},
+	"jne": {
+		Opcode:     jne,
+		NumOperand: 1,
+	},
+	"jz": {
+		Opcode:     jz,
+		NumOperand: 1,
+	},
+	"jnz": {
+		Opcode:     jnz,
+		NumOperand: 1,
+	},
+	"jge": {
+		Opcode:     jge,
+		NumOperand: 1,
+	},
+	"jg": {
+		Opcode:     jg,
+		NumOperand: 1,
+	},
+	"jle": {
+		Opcode:     jle,
+		NumOperand: 1,
+	},
+	"jl": {
+		Opcode:     jl,
+		NumOperand: 1,
+	},
+	"in": {
+		Opcode:     in,
+		NumOperand: 1,
+	},
+	"out": {
+		Opcode:     out,
+		NumOperand: 1,
+	},
+	"outd": {
+		Opcode:     outd,
+		NumOperand: 1,
+	},
+	"end": {
+		Opcode:     end,
+		NumOperand: 0,
+	},
+	"call": {
+		Opcode:     call,
+		NumOperand: 1,
+	},
+	"ret": {
+		Opcode:     ret,
+		NumOperand: 0,
+	},
+	"dn": {
+		Opcode:     dn,
+		NumOperand: 1,
+	},
+}
 
-// list of instructions which the operator needs to be a register (ACC, IDX or PC)
-var RegisterOperator = []Opcode{MOV, INC, DEC}
+// list of instructions that dont use an operand
+var NoOperand = []Opcode{end, ret}
 
-// list of instructions that require a user defined number as the operator (#/B/&)
-var NumberOperator = []Opcode{LDM, LDR, LSL, LSR}
+// list of instructions that take 1 operand
+var OneOperand = []Opcode{not, jmp, je, jne, jz, jnz, jge, jg, jle, jl, in, out, outd, call, dn}
 
-// list of instructions that require addresses
-var AddressOperator = []Opcode{LDD, LDI, LDX, STO, JMP, CMI, JE, JNE}
+// list of instructions that take 2 operands
+var TwoOperand = []Opcode{mov, add, sub, mul, div, mod, and, xor, or, shr, shl, cmp}
 
-// all other instructions can be either defined number or address
+type RegisterType uint8
+
+const (
+	r0 RegisterType = iota + 1
+	r1
+	r2
+	r3
+	r4
+	r5
+	r6
+	r7
+
+	idx
+
+	pc
+)
+
+var RegisterMap = map[string]RegisterType{
+	"%r0": r0,
+	"%r1": r1,
+	"%r2": r2,
+	"%r3": r3,
+	"%r4": r4,
+	"%r5": r5,
+	"%r6": r6,
+	"%r7": r7,
+
+	"%idx": idx,
+
+	"%pc": pc,
+}

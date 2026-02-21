@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"shared"
 )
 
@@ -11,10 +10,4 @@ func reverseMap(m map[string]shared.Opcode) map[shared.Opcode]string {
 		n[v] = k
 	}
 	return n
-}
-
-func PrintInstruction(inst shared.Instruction, idx int) {
-	reversedMap := reverseMap(shared.InstructionSet)
-
-	fmt.Printf("%d: %s %s\n", idx, reversedMap[inst.Opcode], inst.Operator)
 }
