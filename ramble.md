@@ -2,27 +2,105 @@
 
 ## new based swag rambles
 
-with the new spec bringing support for multi operand instructions, i need to rethink my assembler and binary format a little bit
+## instruction encoding
 
-definition below for the binary format
+each instruction begins with a 2 byte header as follows:
 
-instructions are encoded in 2 bytes like so:
+| 15 - 9 | 8 - 4  | 3 - 2     | 1 - 0       |
+| ------ | ------ | --------- | ----------- |
+| unused | opcode | dest type | source type |
 
-bits 0-1: source type
-bits 2-3: target type
-bits 4-8: opcode
-bits 9-15: currently unused
+### Bit Layout
 
-| 15 - 9 | 8 - 4  | 3 - 2       | 1 - 0       |
-| ------ | ------ | ----------- | ----------- |
-| unused | opcode | target type | source type |
+- bits 0–1: Source operand type
+- bits 2–3: Destination operand type
+- bits 4–8: Opcode (5 bits, up to 32 instructions, currently have 29)
+- bits 9–15: unused
 
-operand types:
+after the header, operand data follows in the order:
 
-00 -> register (8 bits)
-01 -> register pointer (8 bits) (when running the instruction, the value of register is treated as an address to do the something to)
-10 -> immediate (32 bit)
-11 -> immediate pointer (32 bit) (can be just user defined number or a number thats been replaced because it was a label)
+`[dest operand bytes][source operand bytes]`
+
+the number of bytes used depends on the operand type. because i now know exactly how many bytes each instruction will take up, i dont need to null delimit them.
+
+---
+
+## operand types
+
+which type an operand is is determined by the syntax of the program
+
+| type | meaning               | encoding size |
+| ---- | --------------------- | ------------- |
+| 00   | Register              | 1 byte        |
+| 01   | Register Dereference  | 1 byte        |
+| 10   | Immediate Value       | 4 bytes       |
+| 11   | Immediate Dereference | 4 bytes       |
+
+---
+
+## operand syntax examples and their types
+
+### 00 — register
+
+access registers directly
+
+```asm
+mov %r0, %r1 ; whatever is in r1 -> r0
+```
+
+encodes both operands as type `00`.
+
+operand byte contains the register number.
+
+---
+
+### 01 — register dereference
+
+memory access through a register.
+
+```asm
+mov %r0, (%r1) ; value in the memory address stored in r1 copied into r0
+```
+
+need to dereference in runtime
+
+---
+
+### 10 — immediate value
+
+immediate value or label address.
+
+```asm
+mov %r0, $5 ; 5 now in r0
+mov %r0, label ; address of label in r0
+```
+
+- `$5` encodes literal `5`
+- `label` encodes the resolved address of `label`
+
+---
+
+### 11 — immediate dereference
+
+```asm
+mov %r0, ($5)
+mov %r0, (label)
+```
+
+---
+
+examples:
+
+```asm
+mov %r0, label     ; r0 = address of label
+mov %r0, (label)   ; r0 = value stored at label
+
+mov %r0, %r1       ; r0 = value in r1
+mov %r0, (%r1)     ; r0 = value at memory address stored in r1
+
+mov %r0, $5        ; r0 = 5
+mov %r0, ($5)      ; r0 = value at memory address 5
+```
 
 ## OLD RAMBLES
 

@@ -31,7 +31,18 @@ parameter size: all registers and stuff is 32-bit
 registers are to be prefixed with a %
 immediate values prefixed with $, can define decimal numbers ($95) or hex numbers ($0x5F)
 
-labels are dereferenced by default, i.e. `mov %r0, label` moves the contents of label into r0. to treat a label as a pointer, and only pass an address, you put a `&` at the beginning of the operator, i.e. `mov %r0, &label` would put the address of label into r0
+() are used for dereferencing, (label) would = whatever is stored at label, etc
+
+```asm
+mov %r0, label     ; r0 = address of label
+mov %r0, (label)   ; r0 = value stored at label
+
+mov %r0, %r1       ; r0 = value in r1
+mov %r0, (%r1)     ; r0 = value at memory address stored in r1
+
+mov %r0, $5        ; r0 = 5
+mov %r0, ($5)      ; r0 = value at memory address 5
+```
 
 the FLAGS register is a 32-bit register used for storing bits of state about the program. currently this only has 3 flags
 
