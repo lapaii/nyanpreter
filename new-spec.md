@@ -20,38 +20,46 @@ parameter size: all registers and stuff is 32-bit
 registers are to be prefixed with a %
 immediate values prefixed with $, can define decimal numbers ($95) or hex numbers ($0x5F)
 
-to treat the value of an operand as a pointer, surround it with []
+labels are dereferenced by default, i.e. `mov %r0, label` moves the contents of label into r0. to treat a label as a pointer, and only pass an address, you put a `&` at the beginning of the operator, i.e. `mov %r0, &label` would put the address of label into r0
 
-## (WIP) instruction table
+the FLAGS register is a 32-bit register used for storing bits of state about the program. currently this only has 3 flags
 
-| opcode | operand     | explanation                                          |
-| ------ | ----------- | ---------------------------------------------------- |
-| mov    | src, target | move from value to r1                                |
-| add    | src, target | add value to r1                                      |
-| sub    | src, target | sub value to r1                                      |
-| mul    | src, target | multiply value to r1                                 |
-| div    | src, target | integer divide value to r1                           |
-| mod    | src, target | modulus value to r1                                  |
-| and    | src, target | bitwise AND value to r1                              |
-| not    | src         | bitwise NOT r1                                       |
-| xor    | src, target | bitwise XOR value to r1                              |
-| or     | src, target | bitwise OR value to r1                               |
-| shr    | src, target | logical shift r1 right by value bits                 |
-| shl    | src, target | logical shift r1 left by value bits                  |
-| jmp    | src         | jump to address                                      |
-| cmp    | src, target | compare value with r1, setting flags based on result |
-| je     | src         | jump to address if equal flag set                    |
-| jne    | src         | jump to address if equal flag NOT set                |
-| jz     | src         | jump to address if zero flag set                     |
-| jnz    | src         | jump to address if zero flag not set                 |
-| jge    | src         | jump to address if equal or greater than             |
-| jg     | src         | jump to address only if greater than                 |
-| jle    | src         | jump to address if equal or less than                |
-| jl     | src         | jump to address only if less than                    |
-| in     | src         | save ascii value of 1 char entered into stdin to r1  |
-| out    | src         | output ascii value from r1 to stdout                 |
-| outd   | src         | output value from r1 to stdout as a decimal number   |
-| call   | src         | jump to address, while saving return address         |
-| ret    |             | jump back to latest return address                   |
-| dn     | number      | declare number (not _real_ instruction)              |
-| ds     | string      | declare string                                       |
+bit 0: ZF (Zero Flag) set if the result of an operation is zero
+bit 1: SF (Sign Flag) set if the result of an operation is negative
+bit 2: OF (Overflow Flag) set if the result of an operation caused an overflow
+
+## instruction table
+
+i dont _see_ this expanding in the future, but you never know!
+
+| opcode | operand             | explanation                                                                 |
+| ------ | ------------------- | --------------------------------------------------------------------------- |
+| mov    | dest, src           | copy the data from src to dest                                              |
+| add    | dest, addend        | addend + dest and stores in dest                                            |
+| sub    | minuend, subtrahend | subtrahend - minuend and store result in minuend                            |
+| mul    | dest, multiplier    | multiplier \* dest and store result in dest                                 |
+| div    | divisor, dividend   | integer divide dividend ÷ divisor and store result in divisor               |
+| mod    | divisor, dividend   | dividend mod divisor and store result in divisor                            |
+| and    | dest, mask          | bitwise AND both operands and store in dest                                 |
+| not    | arg                 | bitwise NOT arg                                                             |
+| xor    | dest, flip          | bitwise XOR both operands and stoere in dest                                |
+| or     | dest, mask          | bitwise OR both operands and store in dest                                  |
+| shr    | dest, cnt           | logical shift dest right by cnt bits                                        |
+| shl    | dest, cnt           | logical shift dest left by cnt bits                                         |
+| jmp    | loc                 | jump to location                                                            |
+| cmp    | minuend, subtrahend | calculates subtrahend - minuend, FLAGS register is set based on the results |
+| je     | loc                 | jump to location if ZF = 1                                                  |
+| jne    | loc                 | jump to location if ZF = 0                                                  |
+| jz     | loc                 | jump to location if ZF = 1 (identical to je)                                |
+| jnz    | loc                 | jump to location if ZF = 0 (identical to jne)                               |
+| jge    | loc                 | jump to location if SF = OF or ZF = 1                                       |
+| jg     | loc                 | jump to location if SF = OF and ZF = 0                                      |
+| jle    | loc                 | jump to location if SF != OF or ZF = 1                                      |
+| jl     | loc                 | jump to location if SF != OF                                                |
+| in     | dest                | save ascii value of a character entered into stdin to dest                  |
+| out    | src                 | output ascii value from src to stdout                                       |
+| outd   | src                 | output value from src to stdout as a decimal number                         |
+| call   | src                 | jump to address, while pushing the current PC to the return stack           |
+| ret    |                     | pop from return stack and set PC to that location                           |
+| dn     | number              | declare number                                                              |
+| ds     | string              | declare string                                                              |
