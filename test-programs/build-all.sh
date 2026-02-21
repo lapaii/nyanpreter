@@ -20,7 +20,7 @@ NYASSEMBLER_EXEC="${NYASSEMBLER_DIR}/nyassembler"
 # go back to test-programs directory
 cd "${SCRIPT_DIR}"
 
-echo "Processing .nyan files in ${SCRIPT_DIR}..."
+echo "Processing .nyasm files in ${SCRIPT_DIR}..."
 
 shopt -s nullglob
 for src in *.nyasm; do

@@ -1,6 +1,0 @@
-_start: mov %r2, $10 ; load 10 to r5
-add %r5, %r6 ; add hex 10 (16) to r0, r0 now 21
-outd (nyan) ; output "21" to stdout
-end ; end program
-
-nyan: dn, $50

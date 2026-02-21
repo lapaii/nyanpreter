@@ -11,11 +11,11 @@ func Serialise(input []shared.Instruction) (*bytes.Buffer, error) {
 
 	buf := new(bytes.Buffer)
 
-	// _, err := buf.WriteString("nya:3")
+	_, err := buf.WriteString("nya:3")
 
-	// if err != nil {
-	// 	return buf, err
-	// }
+	if err != nil {
+		return buf, err
+	}
 
 	for _, instruction := range input {
 		header := uint16(0) // 2 bytes, set
