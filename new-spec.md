@@ -10,6 +10,17 @@ most instructions will have two operands, unlike just the one in the previous la
 
 the syntax for nyasm is a mix of my favourite parts of gas syntax and intel syntax
 
+to define a label, it must be all in one line. allowed characters are A-z, - (hypen / minus) and \_ (underscore)
+
+```asm
+label:
+  mov %r0, $5 ; ❌ not supported
+```
+
+```asm
+label: mov %r0, $5 ; ✅ supported
+```
+
 convention will be writing mnemonics in lowercase but assembler will also support uppercase
 
 comments are done in with a single ; anywhere in a line to comment out and ignore the rest of that line
