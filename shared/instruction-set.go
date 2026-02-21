@@ -14,10 +14,10 @@ const (
 
 type Instruction struct {
 	SourceType OperandType
-	TargetType OperandType
+	DestType   OperandType
 	Opcode     Opcode
 	Source     Operand
-	Target     Operand
+	Dest       Operand
 }
 
 func ModifyInstruction(instructions *[]Instruction, index int, newInstruction Instruction) {

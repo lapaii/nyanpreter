@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	firstpass "nyassembler/first-pass"
 	secondpass "nyassembler/second-pass"
 	"nyassembler/serialiser"
+	"os"
 )
 
 func main() {
@@ -36,14 +36,21 @@ func StartAssembly(inputPath string, outputPath string) {
 	outputProgram, err := secondpass.SecondPass(contents, symbolTable)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
-	bytes := serialiser.Serialise(outputProgram)
-
-	err = WriteFile(outputPath, bytes)
+	buf, err := serialiser.Serialise(outputProgram)
 
 	if err != nil {
 		panic(err)
 	}
+
+	file, err := os.Create(outputPath)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	buf.WriteTo(file)
 }

@@ -37,14 +37,14 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]shared.
 
 		// init operand stuff
 		var src shared.Operand
-		var target shared.Operand
+		var dest shared.Operand
 		var srcType shared.OperandType
-		var targetType shared.OperandType
+		var destType shared.OperandType
 
 		// parse first operand
 		var err error
-		if OpcodeInfo.NumOperand == 1 {
-			src, srcType, err = operand.ParseOperand(idx, lineParts[1], symbolTable)
+		if OpcodeInfo.NumOperand >= 1 {
+			dest, destType, err = operand.ParseOperand(idx, lineParts[1], symbolTable)
 
 			if err != nil {
 				return []shared.Instruction{}, err
@@ -53,7 +53,7 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]shared.
 
 		// parse second operand
 		if OpcodeInfo.NumOperand == 2 {
-			target, targetType, err = operand.ParseOperand(idx, lineParts[2], symbolTable)
+			src, srcType, err = operand.ParseOperand(idx, lineParts[2], symbolTable)
 
 			if err != nil {
 				return []shared.Instruction{}, err
@@ -63,14 +63,12 @@ func SecondPass(contents []string, symbolTable firstpass.SymbolTable) ([]shared.
 		// add this instruction
 		outputProgram = append(outputProgram, shared.Instruction{
 			SourceType: srcType,
-			TargetType: targetType,
+			DestType:   destType,
 			Opcode:     OpcodeInfo.Opcode,
 			Source:     src,
-			Target:     target,
+			Dest:       dest,
 		})
 	}
-
-	fmt.Println(outputProgram)
 
 	return outputProgram, nil
 }
